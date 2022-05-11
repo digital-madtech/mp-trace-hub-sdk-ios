@@ -1,0 +1,11 @@
+framework module MagicPixelTraceHub {
+  umbrella header "MagicPixelTraceHub.h"
+
+  export *
+  module * { export * }
+}
+
+module MagicPixelTraceHub.Swift {
+    header "MagicPixelTraceHub-Swift.h"
+    requires objc
+}
