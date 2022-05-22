@@ -25,4 +25,7 @@ import UIKit
     
     /// Requests for the WebView are already not being interecpted
     case alreadyNotListening = 40
+    
+    /// Session has been expired
+    case sessionExpired = 50
 }

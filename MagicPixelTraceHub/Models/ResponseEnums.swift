@@ -25,6 +25,9 @@ import UIKit
     /// Config was not provided. Config must be provided before using any functionality.
     case configNotProvided = 50
     
+    /// Session has been expired
+    case sessionExpired = 60
+    
     /// Failed operation
     case failed = -1
 }

@@ -7,14 +7,11 @@
 
 class Config: NSObject {
     
-    let DEBUG_MODE = true
-    
-    private(set) var vendorId: String = ""
-    private(set) var projectId: String = ""
-    private(set) var clientCode: String = ""
-    private(set) var clientPrefix: String = ""
-    private(set) var debugId: String = ""
+    private(set) var debugMode: Bool = false
+    private(set) var websocketEndpoint: String = ""
+    private(set) var channelName: String = ""
     private(set) var apiKey: String = ""
+    private(set) var expiry: Double = 0
     private(set) var listenerMode: THListenerMode = THListenerMode.off
     
     static var shared: Config = {
@@ -26,31 +23,40 @@ class Config: NSObject {
         
     }
     
-    func setVendorId(val: String) {
-        vendorId = val
+    func setDebugMode(_ val: Bool) {
+        debugMode = val
     }
     
-    func setProjectId(val: String) {
-        projectId = val
+    func setWebsocketEndpoint(val: String) {
+        websocketEndpoint = val
     }
     
-    func setClientCode(val: String) {
-        clientCode = val
-    }
-    
-    func setClientPrefix(val: String) {
-        clientPrefix = val
+    func setChannelName(val: String) {
+        channelName = val
     }
     
     func setApiKey(val: String) {
         apiKey = val
     }
     
-    func setDebugId(val: String) {
-        debugId = val
+    func setExpiry(val: Double) {
+        expiry = val
     }
     
     func setListenerMode(val: THListenerMode) {
         listenerMode = val
+    }
+    
+    func doesConfigExists() -> Bool {
+        return self.apiKey.isEmpty()
+    }
+    
+    func hasSessionExpired() -> Bool {
+        if doesConfigExists() {
+            return true
+        }
+        
+        let currEpochTime = Date().timeIntervalSince1970 * 1000
+        return currEpochTime > self.expiry
     }
 }

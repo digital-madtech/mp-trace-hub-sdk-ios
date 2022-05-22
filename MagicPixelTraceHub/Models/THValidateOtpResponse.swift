@@ -9,13 +9,11 @@
 import UIKit
 
 @objc class THValidateOtpResponse: NSObject {
-    var data: String
-    var messageType: String
-    var tag: String
+    var expired: Bool
+    var collectorUrl: String
     
-    init(data: String, messageType: String, tag: String = "") {
-        self.data = data
-        self.messageType = messageType
-        self.tag = tag
+    init(expired: Bool, collectorUrl: String) {
+        self.expired = expired
+        self.collectorUrl = collectorUrl
     }
 }

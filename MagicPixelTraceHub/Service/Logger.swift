@@ -12,8 +12,8 @@ class Logger {
     
     static let prefix = "###THUBDEBUGMODE###"
     static func log(_ message: Any) {
-        if Config.shared.DEBUG_MODE {
-            print("\(prefix)\(Config.shared.debugId): \(message)")
+        if Config.shared.debugMode {
+            print("\(prefix)\(Config.shared.channelName): \(message)")
         }
     }
 }

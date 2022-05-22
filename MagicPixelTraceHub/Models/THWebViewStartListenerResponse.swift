@@ -31,5 +31,8 @@ import UIKit
     
     /// A delegate was already set for this WebView
     case alreadyDelegateSet = 60
+    
+    /// Session has been expired
+    case sessionExpired = 70
 }
 
