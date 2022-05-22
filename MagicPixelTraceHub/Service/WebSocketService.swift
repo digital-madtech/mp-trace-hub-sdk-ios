@@ -93,7 +93,7 @@ class WebSocketService {
     // To be used wisely, no guard checks on this function
     private func webSocketConnect() {
         
-        Logger.log("WebSocketService :: webSocketConnect :: connect attempt")
+        Logger.log("WebSocketService :: webSocketConnect :: Connection attempt")
         
         self.webSocketManager = nil
         self.webSocketClient = nil
@@ -103,7 +103,6 @@ class WebSocketService {
             return
         }
         
-//        self.webSocketManager = SocketManager(socketURL: url, config: [.log(true), .compress])
         self.webSocketManager = SocketManager(socketURL: url, config: [.log(false), .compress])
         self.webSocketClient = self.webSocketManager.defaultSocket
         
@@ -118,30 +117,29 @@ class WebSocketService {
         
         webSocketClient.on(clientEvent: .connect) {data, ack in
             self.reconnectAttempts = 0
-            Logger.log("WebSocketService :: WebSocketDelegate :: websocket is connected")
+            Logger.log("WebSocketService :: WebSocketDelegate :: Websocket is connected")
             Logger.log(data)
             self.flushQueue()
         }
         
         webSocketClient.on(clientEvent: .disconnect) {data, ack in
             Logger.log(data)
-            Logger.log("WebSocketService :: WebSocketDelegate :: websocket is disconnected")
+            Logger.log("WebSocketService :: WebSocketDelegate :: Websocket is disconnected")
         }
         
         webSocketClient.on(clientEvent: .reconnect) {data, ack in
             Logger.log(data)
-            Logger.log("WebSocketService :: WebSocketDelegate :: websocket attempting to reconnect")
+            Logger.log("WebSocketService :: WebSocketDelegate :: Websocket attempting to reconnect")
         }
         
         webSocketClient.on(clientEvent: .statusChange) {data, ack in
             Logger.log(data)
-            Logger.log("WebSocketService :: WebSocketDelegate :: websocket connection status changed to \(data)")
+            Logger.log("WebSocketService :: WebSocketDelegate :: Websocket connection status changed to \(data)")
         }
         
         webSocketClient.on(clientEvent: .error) {data, ack in
-            
             Logger.log(data)
-            Logger.log("WebSocketService :: WebSocketDelegate :: websocket connection error")
+            Logger.log("WebSocketService :: WebSocketDelegate :: Websocket connection error")
         }
     }
     
@@ -152,8 +150,8 @@ class WebSocketService {
             return
         }
 
-        // If websocket is not connected, then add the message to the queue.
-        // When websocket is connected, the flushQueue method will publish all messages
+        // If Websocket is not connected, then add the message to the queue.
+        // When Websocket is connected, the flushQueue method will publish all messages
         if !self.isConnected() {
             messageQueue.append(Message(data: data, messageType: messageType, tag: tag))
             return
