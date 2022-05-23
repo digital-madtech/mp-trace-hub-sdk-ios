@@ -70,6 +70,15 @@ class WebSocketService {
     func disconnect() {
         
         if !isConnected() {
+            
+            if let webSocketClient = self.webSocketClient {
+                webSocketClient.disconnect()
+            }
+            
+            if let webSocketManager = self.webSocketManager {
+                webSocketManager.disconnect()
+            }
+            
             Logger.log("WebSocketService :: disconnect :: Already disconnected")
             reconnectAttempts = 0
             self.webSocketManager = nil
@@ -178,7 +187,7 @@ class WebSocketService {
                     return
                 }
                 
-                webSocketClient.emitWithAck("todoCreated", jsonString).timingOut(after: 1) {data in
+                webSocketClient.emitWithAck("traceHubLog", jsonString).timingOut(after: 1) {data in
                     Logger.log(data)
                 }
             }

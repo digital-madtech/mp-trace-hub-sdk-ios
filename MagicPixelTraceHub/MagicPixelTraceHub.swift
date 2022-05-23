@@ -30,7 +30,7 @@ public class MagicPixelTraceHub: NSObject {
     /// - Parameter callback: The callback handler is called when configuration setup is complete. This handler provide the confguration status.
     @objc public func configure(config: String, callback: (THResponse) -> Void) {
         
-        self.decodeEncodedString(base64EncodedString: config)
+        self.decodeConfig(base64EncodedString: config)
         callback(THResponse.success)
     }
     
@@ -42,7 +42,7 @@ public class MagicPixelTraceHub: NSObject {
         Config.shared.setListenerMode(val: setting ? THListenerMode.on : THListenerMode.off)
     }
     
-    func decodeEncodedString(base64EncodedString: String) -> Void {
+    private func decodeConfig(base64EncodedString: String) -> Void {
         
         //convert the data to a dictionary and handle errors.
         guard let decodedData = base64EncodedString.base64Decoded() else {
