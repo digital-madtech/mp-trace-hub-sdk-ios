@@ -102,7 +102,7 @@ class WebSocketService {
     // To be used wisely, no guard checks on this function
     private func webSocketConnect() {
         
-        Logger.log("WebSocketService :: webSocketConnect :: Connection attempt")
+        Logger.log("WebSocketService :: webSocketConnect :: Connection attempt :: \(Config.shared.websocketEndpoint)")
         
         self.webSocketManager = nil
         self.webSocketClient = nil
