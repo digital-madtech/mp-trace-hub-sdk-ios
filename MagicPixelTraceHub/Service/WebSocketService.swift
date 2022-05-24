@@ -67,38 +67,6 @@ class WebSocketService {
         webSocketConnect()
     }
     
-    func disconnect() {
-        
-        if !isConnected() {
-            
-            if let webSocketClient = self.webSocketClient {
-                webSocketClient.disconnect()
-            }
-            
-            if let webSocketManager = self.webSocketManager {
-                webSocketManager.disconnect()
-            }
-            
-            Logger.log("WebSocketService :: disconnect :: Already disconnected")
-            reconnectAttempts = 0
-            self.webSocketManager = nil
-            self.webSocketClient = nil
-            return
-        }
-        
-        Logger.log("WebSocketService :: disconnect :: Disconnect attempt")
-        
-        guard let webSocketClient = webSocketClient else {
-            return
-        }
-        
-        webSocketClient.disconnect()
-//        webSocket.disconnect(closeCode: WebSocketServiceConstants.DISCONNECT_CLOSE_CODE)
-        
-        self.webSocketManager = nil
-        self.webSocketClient = nil
-    }
-    
     // To be used wisely, no guard checks on this function
     private func webSocketConnect() {
         
@@ -150,6 +118,38 @@ class WebSocketService {
             Logger.log(data)
             Logger.log("WebSocketService :: WebSocketDelegate :: Websocket connection error")
         }
+    }
+    
+    func disconnect() {
+        
+        if !isConnected() {
+            
+            if let webSocketClient = self.webSocketClient {
+                webSocketClient.disconnect()
+            }
+            
+            if let webSocketManager = self.webSocketManager {
+                webSocketManager.disconnect()
+            }
+            
+            Logger.log("WebSocketService :: disconnect :: Already disconnected")
+            reconnectAttempts = 0
+            self.webSocketManager = nil
+            self.webSocketClient = nil
+            return
+        }
+        
+        Logger.log("WebSocketService :: disconnect :: Disconnect attempt")
+        
+        guard let webSocketClient = webSocketClient else {
+            return
+        }
+        
+        webSocketClient.disconnect()
+//        webSocket.disconnect(closeCode: WebSocketServiceConstants.DISCONNECT_CLOSE_CODE)
+        
+        self.webSocketManager = nil
+        self.webSocketClient = nil
     }
     
     func send(data: String, messageType: String, tag: String = "") {

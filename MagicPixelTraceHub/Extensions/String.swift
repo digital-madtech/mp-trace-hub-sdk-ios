@@ -10,8 +10,19 @@ import Foundation
 
 extension String {
     func toJSON() -> [String: Any]? {
-        guard let data = self.data(using: .utf8, allowLossyConversion: false) else { return nil }
-        return try? JSONSerialization.jsonObject(with: data, options: .mutableContainers) as? [String: Any]
+        
+        guard let data = self.data(using: .utf8, allowLossyConversion: false) else {
+            return nil
+        }
+        
+        do {
+            guard let json = try JSONSerialization.jsonObject(with: data, options: .allowFragments) as? [String: Any] else {
+                return nil
+            }
+           return json
+         } catch _ {
+           return nil
+         }
     }
     
     func base64Decoded() -> String? {
