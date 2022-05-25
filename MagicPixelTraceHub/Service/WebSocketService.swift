@@ -80,7 +80,7 @@ class WebSocketService {
             return
         }
         
-        self.webSocketManager = SocketManager(socketURL: url, config: [.log(false), .compress])
+        self.webSocketManager = SocketManager(socketURL: url, config: [.log(false), .compress, .secure(true)])
         self.webSocketClient = self.webSocketManager.defaultSocket
         
         self.listenToWebSocketEvents()
