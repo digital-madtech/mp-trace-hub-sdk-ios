@@ -79,6 +79,11 @@ public class MagicPixelTraceHub: NSObject {
         Config.shared.setApiKey(val: apiKey)
         Config.shared.setExpiry(val: expiry)
         
+        // TODO: TO BE REMOVED
+//        Config.shared.setWebsocketEndpoint(val: "ws://136.37.191.237:3001")
+//        Config.shared.setChannelName(val: "/t-hub/mbuy/HAuh3uvrbxqf9w9hwrs2mot/HDSmwav9qvw01nyvlfx60yhy")
+//        Config.shared.setApiKey(val: "EwjMFqgytfqx0zHeTsvz6JzZw5qaO0790IMirMU1nP")
+        
         let key = Constants.UserDefaultKeys.SessionConfig.rawValue
         let defaults = UserDefaults.standard
         defaults.set(base64EncodedString, forKey: key)
@@ -104,6 +109,13 @@ extension MagicPixelTraceHub {
     /// This method will start the logger process.
     /// - Parameter callback: The callback handler is called when logger process is complete. This handler provide the operation status.
     @objc public func startLogCollector(callback: (THResponse) -> ()) {
+        
+        guard let base64EncodedString = getStoredConfig() else {
+            callback(THResponse.configNotProvided)
+            return
+        }
+        
+        decodeConfig(base64EncodedString: base64EncodedString)
         
         // Check if Config was provided
         if Config.shared.doesConfigExists() {
