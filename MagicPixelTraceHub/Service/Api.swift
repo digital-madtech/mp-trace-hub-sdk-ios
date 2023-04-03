@@ -15,43 +15,42 @@ class Api {
         
     }
     
-//    func sendLogs(msg: String) {
-//        
-////        let apiKey = Config.shared.API_KEY
-//        let vendorId = Config.shared.vendorId
-//        let projectId = Config.shared.projectId
-//        let clientCode = Config.shared.clientCode
-//        let debugId = Config.shared.debugId
-//        
-//        let urlStr: String = "https://\(clientCode).magicpixel.io/\(vendorId)/project/\(projectId)/logs/iOS/\(debugId)"
-//        
-//        let session = URLSession.shared
-//        guard let url = URL(string: urlStr) else {
-//            return
-//        }
-//        
-//        var request = URLRequest(url: url)
-//        request.httpMethod = "POST"
-//        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-////        request.setValue("Authorization", forHTTPHeaderField: apiKey)
-//        
-//        let json = [
-//            "msg": msg
-//        ]
-//        
-//        let jsonData = try! JSONSerialization.data(withJSONObject: json, options: [])
-//        
-//        let task = session.uploadTask(with: request, from: jsonData) { data, response, error in
-//            if let _ = response as? HTTPURLResponse {
-////                print("HTTPURLResponse: \(urlResponse.statusCode)")
-//            }
-//            if let data = data, let _ = String(data: data, encoding: .utf8) {
-////                print("Api Response: \(dataString)")
-//            }
-//        }
-//        
-//        task.resume()
-//    }
+    func sendLogs(msg: String) {
+        
+        let apiKey = Config.shared.restApiKey
+        let vendorId = Config.shared.vendorId
+        let appId = Config.shared.appId
+        let endpoint = Config.shared.restEndpoint
+        
+        let urlStr: String = "\(endpoint)/\(vendorId)/project/\(appId)/logs"
+        
+        let session = URLSession.shared
+        guard let url = URL(string: urlStr) else {
+            return
+        }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.setValue("Authorization", forHTTPHeaderField: apiKey)
+        
+        let json = [
+            "msg": msg
+        ]
+        
+        let jsonData = try! JSONSerialization.data(withJSONObject: json, options: [])
+        
+        let task = session.uploadTask(with: request, from: jsonData) { data, response, error in
+            if let _ = response as? HTTPURLResponse {
+//                print("HTTPURLResponse: \(urlResponse.statusCode)")
+            }
+            if let data = data, let _ = String(data: data, encoding: .utf8) {
+//                print("Api Response: \(dataString)")
+            }
+        }
+        
+        task.resume()
+    }
 //    
 //    func getConfig(callback: (THResponse) -> ()) {
 //        

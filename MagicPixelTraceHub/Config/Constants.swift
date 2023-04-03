@@ -19,4 +19,12 @@ class Constants: NSObject {
         case AuthKey = "auth"
         case ExpiryKey = "exp"
     }
+    
+    enum PropertyListFile: String {
+        case FileName = "MagicPixel-services"
+        case RestEndpointKey = "API_ENDPOINT"
+        case VendorIdKey = "VENDOR_ID"
+        case AppIdKey = "APP_ID"
+        case ApiKeyKey = "API_KEY"
+    }
 }

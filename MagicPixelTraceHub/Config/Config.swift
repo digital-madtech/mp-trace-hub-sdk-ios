@@ -8,10 +8,19 @@
 class Config: NSObject {
     
     private(set) var debugMode: Bool = false
-    private(set) var websocketEndpoint: String = ""
-    private(set) var channelName: String = ""
-    private(set) var apiKey: String = ""
-    private(set) var expiry: Double = 0
+    
+    // REST channel
+    private(set) var restEndpoint: String = ""
+    private(set) var vendorId: String = ""
+    private(set) var appId: String = ""
+    private(set) var restApiKey: String = ""
+    
+    // Websocket channel
+    private(set) var wsEndpoint: String = ""
+    private(set) var wsChannelName: String = ""
+    private(set) var wsApiKey: String = ""
+    private(set) var wsExpiry: Double = 0
+    
     private(set) var listenerMode: THListenerMode = THListenerMode.off
     
     static var shared: Config = {
@@ -23,24 +32,40 @@ class Config: NSObject {
         
     }
     
+    func setRestEndpoint(val: String) {
+        restEndpoint = val
+    }
+    
+    func setVendorId(val: String) {
+        vendorId = val
+    }
+    
+    func setAppId(val: String) {
+        appId = val
+    }
+    
+    func setRestApiKey(val: String) {
+        restApiKey = val
+    }
+    
     func setDebugMode(_ val: Bool) {
         debugMode = val
     }
     
-    func setWebsocketEndpoint(val: String) {
-        websocketEndpoint = val
+    func setWsEndpoint(val: String) {
+        wsEndpoint = val
     }
     
-    func setChannelName(val: String) {
-        channelName = val
+    func setWsChannelName(val: String) {
+        wsChannelName = val
     }
     
-    func setApiKey(val: String) {
-        apiKey = val
+    func setWsApiKey(val: String) {
+        wsApiKey = val
     }
     
-    func setExpiry(val: Double) {
-        expiry = val
+    func setWsExpiry(val: Double) {
+        wsExpiry = val
     }
     
     func setListenerMode(val: THListenerMode) {
@@ -48,7 +73,7 @@ class Config: NSObject {
     }
     
     func doesConfigExists() -> Bool {
-        return self.apiKey.isEmpty()
+        return self.wsApiKey.isEmpty()
     }
     
     func hasSessionExpired() -> Bool {
@@ -57,6 +82,6 @@ class Config: NSObject {
         }
         
         let currEpochTime = Date().timeIntervalSince1970 * 1000
-        return currEpochTime > self.expiry
+        return currEpochTime > self.wsExpiry
     }
 }

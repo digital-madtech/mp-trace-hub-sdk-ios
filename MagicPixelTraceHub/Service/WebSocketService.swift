@@ -70,12 +70,12 @@ class WebSocketService {
     // To be used wisely, no guard checks on this function
     private func webSocketConnect() {
         
-        Logger.log("WebSocketService :: webSocketConnect :: Connection attempt :: \(Config.shared.websocketEndpoint)")
+        Logger.log("WebSocketService :: webSocketConnect :: Connection attempt :: \(Config.shared.wsEndpoint)")
         
         self.webSocketManager = nil
         self.webSocketClient = nil
         
-        guard let url = URL(string: Config.shared.websocketEndpoint) else {
+        guard let url = URL(string: Config.shared.wsEndpoint) else {
             Logger.log("WebSocketService :: webSocketConnect :: Invalid URL")
             return
         }
@@ -84,7 +84,7 @@ class WebSocketService {
         self.webSocketClient = self.webSocketManager.defaultSocket
         
         self.listenToWebSocketEvents()
-        self.webSocketClient.connect(withPayload: ["token": Config.shared.apiKey, "cName": Config.shared.channelName])
+        self.webSocketClient.connect(withPayload: ["token": Config.shared.wsApiKey, "cName": Config.shared.wsChannelName])
     }
     
     private func listenToWebSocketEvents() {

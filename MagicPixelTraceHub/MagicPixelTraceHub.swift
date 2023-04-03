@@ -7,8 +7,7 @@ import WebKit
 
 public class MagicPixelTraceHub: NSObject {
     
-    // 24 hours lifetime
-    
+    private var isConfigValid = false;
     private let logInterceptor:LogInterceptor = LogInterceptor()
     private let webRequestInterceptor:WebRequestInterceptor = WebRequestInterceptor()
     private static var instance: MagicPixelTraceHub?
@@ -28,11 +27,33 @@ public class MagicPixelTraceHub: NSObject {
     /// The initial method to be inovked before using other methods.
     /// - Parameter config: Base64 Encoded String provided in the Magic Pixel Portal
     /// - Parameter callback: The callback handler is called when configuration setup is complete. This handler provide the confguration status.
+    @objc public func initialize(callback: (THResponse) -> Void) {
+        
+        let plistProperties = getPlistProperties()
+        let restEndpoint = plistProperties.restEndpoint;
+        let vendorId = plistProperties.vendorId;
+        let appId = plistProperties.appId
+        let apiKey = plistProperties.apiKey
+        
+        Config.shared.setRestEndpoint(val: restEndpoint)
+        Config.shared.setVendorId(val: vendorId)
+        Config.shared.setAppId(val: appId)
+        Config.shared.setRestEndpoint(val: restEndpoint)
+        Config.shared.setRestApiKey(val: apiKey)
+        
+        callback(THResponse.success)
+    }
+    
+    /// The initial method to be inovked before using other methods.
+    /// - Parameter config: Base64 Encoded String provided in the Magic Pixel Portal
+    /// - Parameter callback: The callback handler is called when configuration setup is complete. This handler provide the confguration status.
     @objc public func configure(config: String, callback: (THResponse) -> Void) {
         
         self.decodeConfig(base64EncodedString: config)
         callback(THResponse.success)
     }
+    
+    // Apikey, Org Id, App Id
     
     func setSettings(setting: Bool) {
         let key = Constants.UserDefaultKeys.LogSetting.rawValue
@@ -74,10 +95,10 @@ public class MagicPixelTraceHub: NSObject {
             fatalError("\(expiryKey) not found in decoded Json")
         }
         
-        Config.shared.setWebsocketEndpoint(val: webSocketEndpoint)
-        Config.shared.setChannelName(val: channelName)
-        Config.shared.setApiKey(val: apiKey)
-        Config.shared.setExpiry(val: expiry)
+        Config.shared.setWsEndpoint(val: webSocketEndpoint)
+        Config.shared.setWsChannelName(val: channelName)
+        Config.shared.setWsApiKey(val: apiKey)
+        Config.shared.setWsExpiry(val: expiry)
         
         // TODO: TO BE REMOVED
 //        Config.shared.setWebsocketEndpoint(val: "ws://136.37.191.237:3001")
@@ -102,9 +123,103 @@ public class MagicPixelTraceHub: NSObject {
     }
 }
 
+// REST Channel
+
 // Public helper functions
 
 extension MagicPixelTraceHub {
+    
+    func getPlistProperties() -> (
+        restEndpoint: String,
+        vendorId: String,
+        appId: String,
+        apiKey: String
+    ) {
+        let fileName = Constants.PropertyListFile.FileName.rawValue
+        
+        var propertyListFormat =  PropertyListSerialization.PropertyListFormat.xml //Format of the Property List.
+        var plistData: [String: AnyObject] = [:]
+        guard let plistPath: String = Bundle.main.path(forResource: fileName, ofType: "plist") else {
+            fatalError("Unable to find \(fileName).plist file.")
+        }
+        
+        guard let plistXML = FileManager.default.contents(atPath: plistPath) else {
+            fatalError("Unable to find \(fileName).plist file.")
+        }
+        
+        do {//convert the data to a dictionary and handle errors.
+            plistData = try PropertyListSerialization.propertyList(from: plistXML, options: .mutableContainersAndLeaves, format: &propertyListFormat) as! [String:AnyObject]
+            
+            let restEndpointKey = Constants.PropertyListFile.RestEndpointKey.rawValue
+            let vendorIdKey = Constants.PropertyListFile.VendorIdKey.rawValue
+            let appIdKey = Constants.PropertyListFile.AppIdKey.rawValue
+            let apiKeyKey = Constants.PropertyListFile.ApiKeyKey.rawValue
+            
+            guard let restEndpoint = plistData[restEndpointKey] as? String else {
+                fatalError("\(restEndpointKey) is manadatory in \(fileName).plist file.")
+            }
+            
+            guard let vendorId = plistData[vendorIdKey] as? String else {
+                fatalError("\(vendorIdKey) is manadatory in \(fileName).plist file.")
+            }
+            
+            guard let appId = plistData[appIdKey] as? String else {
+                fatalError("\(appIdKey) is manadatory in \(fileName).plist file.")
+            }
+            
+            guard let apiKey = plistData[apiKeyKey] as? String else {
+                fatalError("\(apiKeyKey) is manadatory in \(fileName).plist file.")
+            }
+            
+            self.isConfigValid = true
+            
+            return (
+                restEndpoint: restEndpoint,
+                vendorId: vendorId,
+                appId: appId,
+                apiKey: apiKey
+            )
+            
+        } catch {
+            fatalError("Error while reading \(fileName).plist file. Make sure the file is in the correct format.")
+        }
+    }
+    
+    /// This method will start the logger process.
+    /// - Parameter callback: The callback handler is called when logger process is complete. This handler provide the operation status.
+    @objc public func publishLogEvents(
+        message: String,
+        tag: String,
+        callback: (THResponse) -> ()) {
+        
+        guard let base64EncodedString = getStoredConfig() else {
+            callback(THResponse.configNotProvided)
+            return
+        }
+        
+        decodeConfig(base64EncodedString: base64EncodedString)
+        
+        // Check if Config was provided
+        if Config.shared.doesConfigExists() {
+            callback(THResponse.configNotProvided)
+            return
+        }
+        
+        if Config.shared.hasSessionExpired() {
+            callback(THResponse.sessionExpired)
+            return
+        }
+                
+        // Start timer to periodically validate Code
+        TimerService.startValidationTimer()
+        
+        // Call API to get config
+        self.setSettings(setting: true)
+        logInterceptor.initialize()
+        WebSocketService.shared.connect()
+        let response = logInterceptor.startListening()
+        callback(response)
+    }
     
     /// This method will start the logger process.
     /// - Parameter callback: The callback handler is called when logger process is complete. This handler provide the operation status.
@@ -199,12 +314,12 @@ extension MagicPixelTraceHub {
             return -1
         }
         
-        return Config.shared.expiry
+        return Config.shared.wsExpiry
     }
     
     /// This method will provide the expiration time of the logger process in epoch format.
     @objc public func channelName() -> String {
-        return Config.shared.channelName
+        return Config.shared.wsChannelName
     }
     
     /// This method will provide the expiration time of the logger process in epoch format.
