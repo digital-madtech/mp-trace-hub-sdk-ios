@@ -38,7 +38,6 @@ public class MagicPixelTraceHub: NSObject {
         Config.shared.setRestEndpoint(val: restEndpoint)
         Config.shared.setVendorId(val: vendorId)
         Config.shared.setAppId(val: appId)
-        Config.shared.setRestEndpoint(val: restEndpoint)
         Config.shared.setRestApiKey(val: apiKey)
         
         callback(THResponse.success)
