@@ -46,10 +46,10 @@ public class MagicPixelTraceHub: NSObject {
     /// The initial method to be inovked before using other methods.
     /// - Parameter config: Base64 Encoded String provided in the Magic Pixel Portal
     /// - Parameter callback: The callback handler is called when configuration setup is complete. This handler provide the confguration status.
-    @objc public func configure(config: String, callback: (THResponse) -> Void) {
+    @objc public func configure(config: String) -> THResponse {
         
         self.decodeConfig(base64EncodedString: config)
-        callback(THResponse.success)
+        return THResponse.success
     }
     
     // Apikey, Org Id, App Id
@@ -222,24 +222,21 @@ extension MagicPixelTraceHub {
     
     /// This method will start the logger process.
     /// - Parameter callback: The callback handler is called when logger process is complete. This handler provide the operation status.
-    @objc public func startLogCollector(callback: (THResponse) -> ()) {
+    @objc public func startLogCollector() -> THResponse {
         
         guard let base64EncodedString = getStoredConfig() else {
-            callback(THResponse.configNotProvided)
-            return
+            return THResponse.configNotProvided
         }
         
         decodeConfig(base64EncodedString: base64EncodedString)
         
         // Check if Config was provided
         if Config.shared.doesConfigExists() {
-            callback(THResponse.configNotProvided)
-            return
+            return THResponse.configNotProvided
         }
         
         if Config.shared.hasSessionExpired() {
-            callback(THResponse.sessionExpired)
-            return
+            return THResponse.sessionExpired
         }
                 
         // Start timer to periodically validate Code
@@ -250,17 +247,16 @@ extension MagicPixelTraceHub {
         logInterceptor.initialize()
         WebSocketService.shared.connect()
         let response = logInterceptor.startListening()
-        callback(response)
+        return response
     }
     
     /// This method will stop the logger process.
     /// - Parameter callback: The callback handler is called when logger process is stopped. This handler provide the operation status.
-    @objc public func stopLogCollector(_ callback: (THResponse) -> ()) {
+    @objc public func stopLogCollector() -> THResponse {
         
         // Check if Config was provided
         if Config.shared.doesConfigExists() {
-            callback(THResponse.configNotProvided)
-            return
+            return THResponse.configNotProvided
         }
         
         // Start timer to periodically validate Code
@@ -269,7 +265,7 @@ extension MagicPixelTraceHub {
         setSettings(setting: false)
         logInterceptor.stopListening()
         WebSocketService.shared.disconnect()
-        callback(THResponse.success)
+        return THResponse.success
     }
     
     /// This method will log the statement with the tag.
