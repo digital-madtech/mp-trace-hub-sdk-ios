@@ -6,7 +6,7 @@ spec.source = { :git => "https://github.com/sridmat/mp-trace-hub-sdk-ios.git", :
 spec.authors = 'MagicPixel Operations'
 spec.license = 'MIT'
 spec.summary = 'MagicPixel TraceHub iOS framework'
-spec.source_files = MagicPixelTraceHub, 'MagicPixelTraceHub//.{h,m,swift,kt}'
+spec.source_files = 'MagicPixelTraceHub', 'MagicPixelTraceHub//.{h,m,swift,kt}'
 spec.module_name = 'MagicPixelTraceHub'
 spec.ios.deployment_target = '11.0'
 end
